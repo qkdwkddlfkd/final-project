@@ -1,0 +1,289 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>HNF 건강기능식품 검색 포털</title>
+
+    <!-- JQuery를 import 합니다 -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <!-- Webpage Title -->
+    <title>Hello, world!</title>
+
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- JS -->
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+
+    </style>
+
+    <script>
+        var listordernumber = 1;
+
+        function update() {
+            $.ajax({
+                type: "get",
+                url: "/drugs",
+                data: {},
+                success: function(response) {
+                    // db에서 받아온 데이터로 테이블만들기
+                    // HTML APPEND  
+                }
+            });
+        }
+
+        function crawl() {
+            $.ajax({
+                type: "get",
+                url: "/crawl",
+                data: {},
+                success: function(response) {
+                    alert('크롤링이 완료되었습니다')
+                }
+            });
+        }
+
+        function q1() {
+            //names-q1 비워주기 empty 함수
+            $('#names-q1').empty();
+            $('#crwallist1').empty();
+            $('#crwallist2').empty();
+            //Ajax써서 GET으로 데이터 받아오기
+            $.ajax({
+                type: "GET",
+                url: "http://openapi.foodsafetykorea.go.kr/api/b7511e10cbfd4b10a763/I0030/json/1/10",
+                data: {}, //데이터 보내지 않음
+                success: function(response) {
+                    let total_count = response['I0030']['total_count']
+                        //         let data = response['I0030']['row']
+                    console.log(total_count)
+
+                    var current_date = new Date();
+
+                    let total_count_date = '품목신고 완료:' + ' ' + total_count + '개, ' + current_date + ' 기준' + ''
+                    $('#names-q1').append(total_count_date);
+                    //    console.log(data.length)
+
+                    crawl_all_data(total_count)
+                }
+            })
+        }
+
+        function crawl_all_data(total_count) {
+            for (i = 1; i < total_count; i += 1000) {
+                let remain = total_count - i + 1 > 1000 ? i + 999 : total_count;
+                // for (i = 1; i < 28310; i += 1000) {
+                //     let remain = 28310 - i + 1 > 1000 ? i + 999 : 28310;
+                console.log(i, remain)
+                let url = "/drugs"
+                    // 'http://openapi.foodsafetykorea.go.kr/api/b7511e10cbfd4b10a763/I0030/json/' + i + '/' + remain;
+                    //let url_temp = 'http://openapi.foodsafetykorea.go.kr/api/b7511e10cbfd4b10a763/I0030/json/' + i + '/' + remain;
+                    // console.log(url_temp)
+
+                $.ajax({
+                    type: "GET",
+                    url: "/drugs",
+                    // url_temp ,
+                    data: {}, //데이터 보내지 않음
+                    success: function(response) {
+                        console.log(listordernumber)
+                        let data = response['I0030']['row']
+                        for (let i = 0; i < data.length; i++) {
+                            let license_number = data[i]['LCNS_NO'] // 인허가번호
+                            let factory = data[i]['BSSH_NM'] // 업소명
+                            let product_report_number = data[i]['PRDLST_REPORT_NO'] // 품목제조번호
+                            let product_name = data[i]['PRDLST_NM'] //품목 명
+                            let permission_date = data[i]['PRMS_DT'] // 허가일자
+                            let shelflife = data[i]['POG_DAYCNT'] // 유통기한 일수
+                            let dispose = data[i]['DISPOS'] // 성상
+                            let intake_method = data[i]['NTK_MTHD'] // 섭취방법
+                            let primary_functionality = data[i]['PRIMARY_FNCLTY'] // 주된 기능성
+                            let caution = data[i]['IFTKN_ATNT_MATR_CN'] //섭취시 주의사항
+                            let storage_method = data[i]['CSTDY_MTHD'] // 보관 방법
+                            let category = data[i]['PRDLST_CDNM'] // 유형
+                            let standard_test = data[i]['STDR_STND'] // 기준 규격
+                            let high_low_calorie = data[i]['HIENG_LNTRT_DVS_NM'] // 고열량저영양여부
+                            let production = data[i]['PRODUCTION'] // 생산종료여부
+                            let child = data[i]['CHILD_CRTFC_YN'] // 어린이 기호 식품 여부
+                            let product_shape = data[i]['PRDT_SHAP_CD_NM'] //제품 형태
+                            let package = data[i]['FRMLC_MTRQLT'] // 포장 재질
+                            let substance = data[i]['RAWMTRL_NM'] // 품목 유형(기능지표성분)
+                            let type_of_business = data[i]['INDUTY_CD_NM'] // 업종 (건강기능식품전문제조업)
+                            let last_update = data[i]['LAST_UPDT_DTM'] // 최종수정일자
+
+                            let temp_html = '<tr>' + '<td>' + listordernumber + '</td>' + '<td>' + license_number +
+                                '</td>' + '<td>' + product_name + '</td>' + '<td>' + substance + '</td>' +
+                                '<td>' + package + '</td>' + '<td>' + product_shape + '</td>' +
+                                '<td>' + factory + '</td>' + '<td>' + permission_date + '</td>' + '</tr>'
+                            $('#crwallist').append(temp_html)
+                            listordernumber++;
+                        }
+                    }
+                })
+
+            }
+        }
+    </script>
+
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="navbar-brand" href="#">HNF 건강기능식품 검색 포털</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">About</a>
+                </li>
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                검색
+              </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="#">성분별 검색</a>
+                        <a class="dropdown-item" href="#">제조업체별 검색</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">검색 기능 설명</a>
+                    </div>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+                </li>
+            </ul>
+            <form class="form-inline my-2 my-lg-0">
+                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </div>
+    </nav>
+
+
+    <!-- <h1>식품의약품안전처 공공데이터 활용한 품목신고 현황</h1> -->
+
+    <hr/>
+    <button onclick="crawl()">Crawl</button>
+    <button onclick="update()">Update</button>
+    <div class="question-box">
+        <h2>건강기능식품 품목제조 신고사항 현황</h2>
+        <p>데이터량이 많아 '업데이트' 클릭 후 리스트가 채워지며, 모든 리스트가 채워지기까지 다소 시간이 소요됩니다. </p>
+        <p>검색은 Ctrl + F를 눌러 검색기능(페이지 탐색) 사용이 가능합니다. </p>
+        <p>문의: 관리자 김준식 acolorfulsolution@gmail.com </p>
+        <button onclick="q1()">업데이트</button>
+        <ul id="names-q1">
+            <li>Total Count: 28,403 (2020.04.27 기준, 주말 및 공휴일에는 품목신고 접수가 이뤄지지 않습니다.)</li>
+
+        </ul>
+    </div>
+
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">순번</th>
+                <th scope="col">1. 인허가번호</th>
+                <th scope="col">2. 제품명</th>
+                <th scope="col">3. 성분</th>
+                <th scope="col">4. 포장재질</th>
+                <th scope="col">5. 제품형태</th>
+                <th scope="col">6. 업소명</th>
+                <th scope="col">7. 허가일자</th>
+            </tr>
+        </thead>
+        <tbody id='crwallist'>
+            <tr>
+                <td>1</td>
+                <td>20040020002</td>
+                <td>+프리맥</td>
+                <td>폴리코사놀-사탕수수 왁스알코올(2006-4)</td>
+                <td>PTP(염화비닐수지+알루미늄호일), HDPE(고밀도폴리에틸렌), PE(폴리에틸렌), PET(폴리에틸렌테레프탈레이트), PP(폴리프로필렌), PS(폴리스틸렌), 유리, AL(알루미늄), 철.</td>
+                <td>캡슐</td>
+                <td>코스맥스바이오(주)</td>
+                <td>20150624</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>20110020001</td>
+                <td>6년근 고려홍삼정 PREMIUM</td>
+                <td>홍삼제품</td>
+                <td>유리, 도자기</td>
+                <td>액상</td>
+                <td>주식회사 성윤 에프엔지(F&G)</td>
+                <td>20111209</td>
+            </tr>
+
+        </tbody>
+    </table>
+
+
+    <!--
+    <table border="1">
+        <thead class="thead-dark">
+            <tr>
+                <th>순번</th>
+                <th>1. 인허가번호</th>
+                <th>2. 제품명</th>
+                <th>3. 성분</th>
+                <th>4. 포장재질</th>
+                <th>5. 제품형태</th>
+                <th>6. 업소명</th>
+                <th>7. 허가일자</th>
+
+            </tr>
+        </thead>
+        <tbody width='900px' id='crwallist'>
+           
+
+
+            <tr id='crwallist1'>
+              
+                <td>1</td>
+                <td>20040020002</td>
+                <td>+프리맥</td>
+                <td>폴리코사놀-사탕수수 왁스알코올(2006-4)</td>
+                <td>PTP(염화비닐수지+알루미늄호일), HDPE(고밀도폴리에틸렌), PE(폴리에틸렌), PET(폴리에틸렌테레프탈레이트), PP(폴리프로필렌), PS(폴리스틸렌), 유리, AL(알루미늄), 철.</td>
+                <td>캡슐</td>
+                <td>코스맥스바이오(주)</td>
+                <td>20150624</td>
+
+
+            </tr>
+           
+            <tr id='crwallist2'>
+                
+                <td>2</td>
+                <td>20110020001</td>
+                <td>6년근 고려홍삼정 PREMIUM</td>
+                <td>홍삼제품</td>
+                <td>유리, 도자기</td>
+                <td>액상</td>
+                <td>주식회사 성윤 에프엔지(F&G)</td>
+                <td>20111209</td>
+
+            </tr>
+
+
+
+        </tbody>
+       
+
+    </table>
+
+-->
+
+</body>
+
+</html>
