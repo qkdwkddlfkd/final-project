@@ -33,8 +33,14 @@
                 url: "/drugs",
                 data: {},
                 success: function(response) {
-                    // db에서 받아온 데이터로 테이블만들기
+                    // DB에서 받아온 데이터로 테이블 만들기
+
                     // HTML APPEND  
+                    let temp_html = '<tr>' + '<td>' + listordernumber + '</td>' + '<td>' + license_number +
+                        '</td>' + '<td>' + product_name + '</td>' + '<td>' + substance + '</td>' +
+                        '<td>' + package + '</td>' + '<td>' + product_shape + '</td>' +
+                        '<td>' + factory + '</td>' + '<td>' + permission_date + '</td>' + '</tr>'
+                    $('#crwallist').append(temp_html)
                 }
             });
         }
@@ -58,7 +64,7 @@
             //Ajax써서 GET으로 데이터 받아오기
             $.ajax({
                 type: "GET",
-                url: "http://openapi.foodsafetykorea.go.kr/api/b7511e10cbfd4b10a763/I0030/json/1/10",
+                url: "http://openapi.foodsafetykorea.go.kr/api/b7511e10cbfd4b10a763/I0030/json/1/3",
                 data: {}, //데이터 보내지 않음
                 success: function(response) {
                     let total_count = response['I0030']['total_count']
