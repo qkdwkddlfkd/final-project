@@ -95,7 +95,7 @@ def get_all_drugs():
     return jsonify({'result': 'success', 'drugs': list(drugs)})
 
 @app.route('/drugs/search', methods=['post'])
-def search_drugs():
+def search():
     print(request.form)
     selected = request.form['selected']
     drugs = list(db.healthnutritionfood.find({}, {'_id': 0}))
