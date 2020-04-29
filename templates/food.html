@@ -15,37 +15,42 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
     <!-- JS -->
 
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <style>
+        .table td,
+        .table th {
+            max-width: 300px;
+        }
     </style>
 
     <script>
-        var listordernumber = 1;
-        let drugs = []
+        $(document).ready(function () {
+            get_drugs()
+        })
 
+        function get_drugs() {
+            $('#crwallist > tbody').empty();
+            let listordernumber = 1;
 
-
-        function erase_list() {
-            $('#crwallist').empty();
-        }
-
-        function update() {
             $.ajax({
                 type: "get",
-                url: "/drugs",
+                url: "/api/drugs",
                 data: {},
-                success: function(response) {
+                success: function (response) {
                     // DB에서 받아온 데이터로 테이블 만들기
                     console.log(response)
-                    $('#names-q1').empty();
 
                     let data = response['drugs']
-                    drugs = data
                     for (let i = 0; i < data.length; i++) {
                         let license_number = data[i]['license_number'] // 인허가번호
                         let factory = data[i]['factory'] // 업소명
@@ -74,73 +79,71 @@
                             '</td>' + '<td>' + product_name + '</td>' + '<td>' + substance + '</td>' +
                             '<td>' + package + '</td>' + '<td>' + product_shape + '</td>' +
                             '<td>' + factory + '</td>' + '<td>' + permission_date + '</td>' + '<td>' + last_update + '</td>' + '</tr>'
-                        $('#crwallist').append(temp_html)
+                        $('#crwallist > tbody').append(temp_html)
                         listordernumber++;
                     }
                 }
             });
         }
 
-        function crawl() {
+        function update() {
             $.ajax({
                 type: "get",
-                url: "/crawl",
+                url: "/api/update",
                 data: {},
-                success: function(response) {
-                    alert('크롤링이 완료되었습니다')
+                success: function (response) {
+                    if (response['result'] == 'success') {
+                        alert('크롤링이 완료되었습니다')
+                        location.reload();
+                    } else {
+                        let total_count = response['total_count']
+                        console.log('total_count', total_count)
+                        alert('당일 해당하는 서비스 호출제한 횟수를 초과 하였습니다.')
+                    }
                 }
             });
         }
 
-        function q1() {
-            //names-q1 비워주기 empty 함수
-            $('#names-q1').empty();
-
+        function get_total_count() {
             //Ajax써서 GET으로 데이터 받아오기
             $.ajax({
                 type: "GET",
-                url: "http://openapi.foodsafetykorea.go.kr/api/b7511e10cbfd4b10a763/I0030/json/1/3",
+                url: "/api/total_count",
                 data: {}, //데이터 보내지 않음
-                success: function(response) {
-                    let total_count = response['I0030']['total_count']
-                        //         let data = response['I0030']['row']
+                success: function (response) {
+                    let total_count = response
                     console.log(total_count)
+                    if (total_count == -1) {
+                        $('#total_count').text('당일 해당하는 서비스 호출제한 횟수를 초과 하였습니다.')
+                        return
+                    }
 
                     var current_date = new Date();
+                    let total_count_date = '품목신고 완료: ' + total_count + '개, ' + current_date + ' 기준'
+                    $('#total_count').text(total_count_date);
 
-                    let total_count_date = '품목신고 완료:' + ' ' + total_count + '개, ' + current_date + ' 기준' + ''
-                    $('#names-q1').append(total_count_date);
-                    //    console.log(data.length)
-
-                    //crawl_all_data(total_count)
                 }
             })
         }
 
 
         function search() {
+            $('#crwallist > tbody').empty()
+            let listordernumber = 1
+
             // checkbox 선택된 값들 받아서 리스트로 만들기 -> DATA에 넣어서 보내기
             // 예를 들면 let selected = ['vitaA', 'vitaC']
-            let vitamin_a = $('input:checkbox[id="vitamin_a"]').is(":checked")
-            let beta_carotine = $('input:checkbox[id="beta_carotine"]').is(":checked")
-            let selected_list = []
-            if (vitamin_a) {
-                selected_list.push('비타민 A')
-                selected_list.push('비타민A')
-            }
-            if (beta_carotine) {
-                selected_list.push('베타카로틴')
-                selected_list.push('베타 카로틴')
-            }
-            console.log(selected_list)
-                // 온 결과 append html (위에 했던것처럼)
+            let selected = {}
+            selected['비타민A'] = $('input:checkbox[id="vitamin_a"]').is(":checked")
+            selected['베타카로틴'] = $('input:checkbox[id="beta_carotine"]').is(":checked")
+
+            console.log(selected)
+            // 온 결과 append html (위에 했던것처럼)
             $.ajax({
                 type: "POST",
-                url: "/drugs/search",
-                data: {
-                    'selected': selected_list
-                },
-                success: function(response) {
+                url: "/api/search",
+                data: selected,
+                success: function (response) {
                     // DB에서 받아온 데이터로 테이블 만들기
                     console.log(response)
                     if (response['result'] == 'not found') {
@@ -148,9 +151,6 @@
                         return
                     }
 
-                    $('#names-q1').empty();
-                    $('#crwallist').empty();
-
                     let data = response['drugs']
                     for (let i = 0; i < data.length; i++) {
                         let license_number = data[i]['license_number'] // 인허가번호
@@ -175,12 +175,11 @@
                         let type_of_business = data[i]['type_of_business'] // 업종 (건강기능식품전문제조업)
                         let last_update = data[i]['last_update'] // 최종수정일자
 
-                        // HTML APPEND  아래 코드가 맞는지??
                         let temp_html = '<tr>' + '<td>' + listordernumber + '</td>' + '<td>' + license_number +
                             '</td>' + '<td>' + product_name + '</td>' + '<td>' + substance + '</td>' +
                             '<td>' + package + '</td>' + '<td>' + product_shape + '</td>' +
                             '<td>' + factory + '</td>' + '<td>' + permission_date + '</td>' + '<td>' + last_update + '</td>' + '</tr>'
-                        $('#crwallist').append(temp_html)
+                        $('#crwallist > tbody').append(temp_html)
                         listordernumber++;
                     }
                 }
@@ -193,8 +192,9 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand" href="#">HNF 건강기능식품 검색 포털</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
@@ -206,9 +206,10 @@
                     <a class="nav-link" href="#">About</a>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                검색
-              </a>
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
+                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        검색
+                    </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                         <a class="dropdown-item" href="#">성분별 검색</a>
                         <a class="dropdown-item" href="#">제조업체별 검색</a>
@@ -230,7 +231,7 @@
 
     <!-- <h1>식품의약품안전처 공공데이터 활용한 품목신고 현황</h1> -->
 
-    <hr/>
+    <hr />
 
     <h3> **성분별 검색** </h3>
     <h4> *비타민* </h4>
@@ -310,32 +311,25 @@
     <font>코엔자임 Q10</font> -->
     <p></p>
     <input onclick="search()" class="btn btn-primary" type="submit" value="성분별 검색하기" id="substance_search">
-    <p></p>
-    <p></p>
+    <br />
+    <br />
 
 
 
-    <button onclick="crawl()">Crawl</button>
-    <button onclick="update()">Update</button>
-    <button onclick="erase_list()">리스트 지우기</button>
-
-    <div class="question-box">
+    <div>
         <h2>건강기능식품 품목제조 신고사항 현황</h2>
         <p>데이터량이 많아 '업데이트' 클릭 후 리스트가 채워지며, 모든 리스트가 채워지기까지 다소 시간이 소요됩니다. </p>
         <p>검색은 Ctrl + F를 눌러 검색기능(페이지 탐색) 사용이 가능합니다. </p>
         <p>문의: 관리자 김준식 acolorfulsolution@gmail.com </p>
-        <button onclick="q1()">품목신고 전체 수 업데이트</button>
-        <ul id="names-q1">
-            <li>Total Count: 28,418 (2020.04.27 기준)</li>
-
-        </ul>
+        <button onclick="update()" class="btn btn-primary">업데이트</button>
+        <button class="btn btn-primary" onclick="get_total_count()">품목신고 전체 수 업데이트</button>
+        <div id='total_count'>Total Count: 28,418 (2020.04.27 기준)</div>
     </div>
 
-
-    <table class="table table-striped">
+    <table id="crwallist" class="table table-striped">
         <thead>
             <tr>
-                <th scope="col">순번</th>
+                <th scope="col">No.</th>
                 <th scope="col">1. 인허가번호</th>
                 <th scope="col">2. 제품명</th>
                 <th scope="col">3. 성분</th>
@@ -346,13 +340,14 @@
                 <th scope="col">8. 최종수정일자</th>
             </tr>
         </thead>
-        <tbody id='crwallist'>
+        <tbody>
             <tr>
                 <td>1</td>
                 <td>20040020002</td>
                 <td>+프리맥</td>
                 <td>폴리코사놀-사탕수수 왁스알코올(2006-4)</td>
-                <td>PTP(염화비닐수지+알루미늄호일), HDPE(고밀도폴리에틸렌), PE(폴리에틸렌), PET(폴리에틸렌테레프탈레이트), PP(폴리프로필렌), PS(폴리스틸렌), 유리, AL(알루미늄), 철.</td>
+                <td>PTP(염화비닐수지+알루미늄호일), HDPE(고밀도폴리에틸렌), PE(폴리에틸렌), PET(폴리에틸렌테레프탈레이트), PP(폴리프로필렌), PS(폴리스틸렌), 유리,
+                    AL(알루미늄), 철.</td>
                 <td>캡슐</td>
                 <td>코스맥스바이오(주)</td>
                 <td>20150624</td>
@@ -372,62 +367,6 @@
 
         </tbody>
     </table>
-
-
-    <!--
-    <table border="1">
-        <thead class="thead-dark">
-            <tr>
-                <th>순번</th>
-                <th>1. 인허가번호</th>
-                <th>2. 제품명</th>
-                <th>3. 성분</th>
-                <th>4. 포장재질</th>
-                <th>5. 제품형태</th>
-                <th>6. 업소명</th>
-                <th>7. 허가일자</th>
-
-            </tr>
-        </thead>
-        <tbody width='900px' id='crwallist'>
-           
-
-
-            <tr id='crwallist1'>
-              
-                <td>1</td>
-                <td>20040020002</td>
-                <td>+프리맥</td>
-                <td>폴리코사놀-사탕수수 왁스알코올(2006-4)</td>
-                <td>PTP(염화비닐수지+알루미늄호일), HDPE(고밀도폴리에틸렌), PE(폴리에틸렌), PET(폴리에틸렌테레프탈레이트), PP(폴리프로필렌), PS(폴리스틸렌), 유리, AL(알루미늄), 철.</td>
-                <td>캡슐</td>
-                <td>코스맥스바이오(주)</td>
-                <td>20150624</td>
-
-
-            </tr>
-           
-            <tr id='crwallist2'>
-                
-                <td>2</td>
-                <td>20110020001</td>
-                <td>6년근 고려홍삼정 PREMIUM</td>
-                <td>홍삼제품</td>
-                <td>유리, 도자기</td>
-                <td>액상</td>
-                <td>주식회사 성윤 에프엔지(F&G)</td>
-                <td>20111209</td>
-
-            </tr>
-
-
-
-        </tbody>
-       
-
-    </table>
-
--->
 
 </body>
 
