@@ -141,12 +141,13 @@ def search():
     
 @app.route('/api/searchtext', methods=['post'])
 def searchtext():
-   # searchtext = request.form.to_dict() #
+    searchtext = request.form.to_dict() #
     drugs = list(db.healthnutritionfood.find({}, {'_id': 0}))
     found_drugs = []
     for drug in drugs:
-        if contains_all_nut(searchtext, drug['substance_list']):
-            found_drugs.append(drug)
+        for i in range(len(drug['substance_list'])):
+            if searchtext == drug['substance_list'][i]:
+                found_drugs.append(drug)
     
     if not found_drugs:
         return jsonify({'result': 'not found'})
