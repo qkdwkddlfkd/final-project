@@ -133,7 +133,7 @@ def search():
     drugs = list(db.healthnutritionfood.find({}, {'_id': 0}))
     found_drugs = []
     for drug in drugs:
-        if contains_all_nut(selected, drug['substance_list']):
+        if contains_all_nut(selected, drug['substance_list']):    #contains_all_nut 무슨뜻? 구글 검색해도 안나옴
             found_drugs.append(drug)
     
     if not found_drugs:
