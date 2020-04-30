@@ -57,7 +57,7 @@ db.healthnutritionfood.drop()  # mystar 콜렉션을 모두 지워줍니다.
 
 # 식약처 api로 총 데이터 수 받아오기 ex) 28050
 def get_total_count():
-    URL = 'http://openapi.foodsafetykorea.go.kr/api/b7511e10cbfd4b10a763/I0030/json/1/2'
+    URL = 'http://openapi.foodsafetykorea.go.kr/api/sample/I0030/json/1/5'
     response = requests.get(URL)
     code = response.status_code
     if code == 200: #200: 아무 오류 없이 잘 대답이 온 것
@@ -135,6 +135,6 @@ def update_db(IS_TEST_MODE = False):
     crawl_all_data(curr_count, total_count)
 
 ### 실행하기
-IS_TEST_MODE = True
+IS_TEST_MODE = False
 db.healthnutritionfood.drop()  # healthnutritionfood 콜렉션을 모두 지우기
 update_db(IS_TEST_MODE)

@@ -4,6 +4,8 @@ import requests
 from flask import Flask, render_template, jsonify, request
 app = Flask(__name__)
 
+
+
 # client = MongoClient('mongodb://sampleID:samplePW@12.34.56.78', 27017)
 # client = MongoClient('mongodb://qkdwkddlfkd:june7575@15.164.216.152', 27017)
 client = MongoClient('localhost', 27017) #Mongoclient를 통해서 localhost 포트 27017 코드에서 실행중인 몽고 DB와 직접 연결
@@ -14,7 +16,7 @@ def home():
     return render_template('food.html')
     
 def get_total_count():
-    URL = 'http://openapi.foodsafetykorea.go.kr/api/b7511e10cbfd4b10a763/I0030/json/1/2'
+    URL = 'http://openapi.foodsafetykorea.go.kr/api/sample/I0030/json/1/5'
     response = requests.get(URL)
     code = response.status_code
     if code == 200: #200: 아무 오류 없이 잘 대답이 온 것
@@ -25,6 +27,47 @@ def get_total_count():
     else:
         total_count = -1
     return total_count
+
+def insert_drugs(drugs):
+    for data in drugs:
+        license_number = data['LCNS_NO'] 
+        factory = data['BSSH_NM'] 
+        product_name = data['PRDLST_NM'] 
+        permission_date = data['PRMS_DT'] 
+        product_shape = data['PRDT_SHAP_CD_NM'] 
+        package = data['FRMLC_MTRQLT']
+        substance = data['RAWMTRL_NM']
+        substance_list = substance.split(',')
+        for i in range(len(substance_list)):
+            substance_list[i] = ''.join(substance_list[i].strip().split())
+        substance_list.sort()
+
+        last_update = data['LAST_UPDT_DTM']
+        product_report_number = data['PRDLST_REPORT_NO'] 
+        shelflife = data['POG_DAYCNT']
+        dispose = data['DISPOS'] 
+        intake_method = data['NTK_MTHD'] 
+        primary_functionality = data['PRIMARY_FNCLTY'] 
+        caution = data['IFTKN_ATNT_MATR_CN'] 
+        storage_method = data['CSTDY_MTHD']
+        category = data['PRDLST_CDNM']
+        standard_test = data['STDR_STND']
+        high_low_calorie = data['HIENG_LNTRT_DVS_NM'] 
+        production = data['PRODUCTION']
+        child = data['CHILD_CRTFC_YN']
+        type_of_business = data['INDUTY_CD_NM']
+
+        drug = {'license_number': license_number, 'product_name': product_name, 'substance_list': substance_list, 
+                'package': package, 'product_shape': product_shape, 'factory': factory, 
+                'permission_date': permission_date, 'last_update': last_update,
+                'product_report_number' : product_report_number, 'shelflife':shelflife, 'dispose': dispose,
+                'intake_method': intake_method, 'primary_functionality': primary_functionality, 'caution':caution,
+                'storage_method': storage_method, 'category':category, 'standard_test':standard_test, 'high_low_calorie':high_low_calorie,
+                'production':production, 'child':child, 'type_of_business':type_of_business
+                }
+
+        print(drug)
+        db.healthnutritionfood.insert_one(drug)
 
 def crawl_all_data(curr_count, total_count):
     # 식약처 api로 새로운 데이터 받아오기 requests (curr_count+1 / total_count) -> 1000개씩 나눠서
@@ -37,9 +80,15 @@ def crawl_all_data(curr_count, total_count):
         URL = 'http://openapi.foodsafetykorea.go.kr/api/b7511e10cbfd4b10a763/I0030/json/' + str(i) + '/' + str(remain)
         response = requests.get(URL)
         code = response.status_code #response 안에 status_code가 저장되어있음 항상. 우린 그걸 가져온거.
+        
         if code == 200: #200:아무 오류 없이 잘 대답이 온 것 / 500: internal server error
             drugs = response.json()['I0030']['row']
             insert_drugs(drugs)
+
+# def current_date():
+
+
+
 
 # API 역할을 하는 부분
 
@@ -78,7 +127,7 @@ def contains_all_nut(selected, substance_list):
 
 @app.route('/api/search', methods=['post'])
 def search():
-    selected = request.form.to_dict()
+    selected = request.form.to_dict() #
     drugs = list(db.healthnutritionfood.find({}, {'_id': 0}))
     found_drugs = []
     for drug in drugs:
@@ -89,6 +138,51 @@ def search():
         return jsonify({'result': 'not found'})
     return jsonify({'result': 'success', 'drugs': found_drugs})
 
+    
+@app.route('/api/searchtext', methods=['post'])
+def searchtext():
+   # searchtext = request.form.to_dict() #
+    drugs = list(db.healthnutritionfood.find({}, {'_id': 0}))
+    found_drugs = []
+    for drug in drugs:
+        if contains_all_nut(searchtext, drug['substance_list']):
+            found_drugs.append(drug)
+    
+    if not found_drugs:
+        return jsonify({'result': 'not found'})
+    return jsonify({'result': 'success', 'drugs': found_drugs})
+
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
+
+
+
+#     from apscheduler.schedulers.background import BackgroundScheduler
+# from apscheduler.jobstores.base import JobLookupError
+# import time
+
+# def job2(a, b):
+#     print("I'm working...", "| [time] "
+#           , str(time.localtime().tm_hour) + ":"
+#           + str(time.localtime().tm_min) + ":"
+#           + str(time.localtime().tm_sec))
+#     print(a + b)
+
+# def run():
+#     sched = BackgroundScheduler()
+#     sched.start()
+
+#     # interval - 매 3초마다 실행
+#     sched.add_job(job2, 'interval', seconds=3, id="test1", args=[10, 20]) ##args 10,20: job2(a,b)에 전달되는 변수. a=10, b=20
+
+#     temp = 1
+#     while True:
+#         print("Running main process...............")
+#         time.sleep(1)
+#         temp = temp + 1
+#         if temp > 15:
+#             sched.remove_job('test1')
+
+# # if __name__ == "__main__":
+# run()

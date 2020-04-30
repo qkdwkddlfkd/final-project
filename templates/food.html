@@ -15,17 +15,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
-        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
     <!-- JS -->
 
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
-        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-        crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
-        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-        crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <style>
         .table td,
         .table th {
@@ -34,8 +29,8 @@
     </style>
 
     <script>
-        $(document).ready(function () {
-            get_drugs()
+        $(document).ready(function() {
+            //  get_drugs()
         })
 
         function get_drugs() {
@@ -46,7 +41,7 @@
                 type: "get",
                 url: "/api/drugs",
                 data: {},
-                success: function (response) {
+                success: function(response) {
                     // DB에서 받아온 데이터로 테이블 만들기
                     console.log(response)
 
@@ -91,7 +86,7 @@
                 type: "get",
                 url: "/api/update",
                 data: {},
-                success: function (response) {
+                success: function(response) {
                     if (response['result'] == 'success') {
                         alert('크롤링이 완료되었습니다')
                         location.reload();
@@ -110,7 +105,7 @@
                 type: "GET",
                 url: "/api/total_count",
                 data: {}, //데이터 보내지 않음
-                success: function (response) {
+                success: function(response) {
                     let total_count = response
                     console.log(total_count)
                     if (total_count == -1) {
@@ -118,14 +113,25 @@
                         return
                     }
 
-                    var current_date = new Date();
-                    let total_count_date = '품목신고 완료: ' + total_count + '개, ' + current_date + ' 기준'
+                    var today = new Date();
+                    let year = today.getFullYear()
+                    let month = 1 + today.getMonth()
+                    let day = today.getDate()
+                    let hour = today.getHours()
+                    let minute = today.getMinutes()
+                    let seconds = today.getSeconds()
+                    let total_count_date = '품목신고 완료: ' + total_count + '개 (' + year + '년 ' + month + '월 ' + day + '일 ' +
+                        hour + ':' + minute + ':' + seconds + ' 기준)'
                     $('#total_count').text(total_count_date);
 
                 }
             })
         }
 
+
+        // 
+        //     if (txt1 == null || txt1.trim() === '') {
+        //         alert('주문자 성함을 입력해주세요');
 
         function search() {
             $('#crwallist > tbody').empty()
@@ -136,14 +142,53 @@
             let selected = {}
             selected['비타민A'] = $('input:checkbox[id="vitamin_a"]').is(":checked")
             selected['베타카로틴'] = $('input:checkbox[id="beta_carotine"]').is(":checked")
+            selected['비타민B1'] = $('input:checkbox[id="vitamin_b1"]').is(":checked")
+            selected['비타민B2'] = $('input:checkbox[id="vitamin_b2"]').is(":checked")
+            selected['나이아신'] = $('input:checkbox[id="vitamin_b3"]').is(":checked")
+            selected['판토텐산'] = $('input:checkbox[id="vitamin_b5"]').is(":checked")
+            selected['비타민B6'] = $('input:checkbox[id="vitamin_b6"]').is(":checked")
+            selected['비오틴'] = $('input:checkbox[id="vitamin_b7"]').is(":checked")
+            selected['엽산'] = $('input:checkbox[id="vitamin_b9"]').is(":checked")
+            selected['비타민B12'] = $('input:checkbox[id="vitamin_b12"]').is(":checked")
+            selected['비타민C'] = $('input:checkbox[id="vitamin_c"]').is(":checked")
+            selected['비타민D'] = $('input:checkbox[id="vitamin_d"]').is(":checked")
+            selected['비타민E'] = $('input:checkbox[id="vitamin_e"]').is(":checked")
+            selected['비타민K'] = $('input:checkbox[id="vitamin_k"]').is(":checked")
+            selected['EPA 및 DHA 함유 유지'] = $('input:checkbox[id="omega-3"]').is(":checked")
+            selected['EPA및DHA함유유지'] = $('input:checkbox[id="omega3"]').is(":checked")
+            selected['마그네슘'] = $('input:checkbox[id="magnesium"]').is(":checked")
+            selected['아연'] = $('input:checkbox[id="zinc"]').is(":checked")
+            selected['구리'] = $('input:checkbox[id="copper"]').is(":checked")
+            selected['셀레늄(또는셀렌)'] = $('input:checkbox[id="selenium"]').is(":checked")
+            selected['망간'] = $('input:checkbox[id="manganese"]').is(":checked")
+            selected['철'] = $('input:checkbox[id="fe"]').is(":checked")
+            selected['크롬'] = $('input:checkbox[id="chrome"]').is(":checked")
+            selected['몰리브덴'] = $('input:checkbox[id="molybdenum"]').is(":checked")
+            selected['요오드'] = $('input:checkbox[id="iodine"]').is(":checked")
+            selected['루테인'] = $('input:checkbox[id="lutein"]').is(":checked")
+            selected['마리골드꽃추출물'] = $('input:checkbox[id="marigold"]').is(":checked")
+                //    selected['밀크씨슬'] = $('input:checkbox[id="milkthistle"]').is(":checked")
+                // selected['밀크씨슬추출물'] = $('input:checkbox[id="milkthistle"]').is(":checked")
+            selected['밀크씨슬추출물'] = $('input:checkbox[id="milk_thistle"]').is(":checked")
+            selected['밀크씨슬(카르두스마리아누스)추출물'] = $('input:checkbox[id="milkthistle"]').is(":checked")
+            selected['히알루론산'] = $('input:checkbox[id="hyaluronic_acid"]').is(":checked")
+            selected['코엔자임Q10'] = $('input:checkbox[id="coenzyme_q10"]').is(":checked")
+            selected['홍삼'] = $('input:checkbox[id="redginseng"]').is(":checked")
+                //selected['홍삼제품'] = $('input:checkbox[id="redginseng"]').is(":checked")
+            selected['프로바이오틱스'] = $('input:checkbox[id="probiotics"]').is(":checked")
+            selected['클로렐라'] = $('input:checkbox[id="chlorella"]').is(":checked")
+                //selected['클로렐라 제품'] = $('input:checkbox[id="chlorella"]').is(":checked")
+
+            // selected['비타민D2'] = $('input:checkbox[id="vitamin_a"]').is(":checked")
+            // selected['비타민D2'] = $('input:checkbox[id="vitamin_a"]').is(":checked")
 
             console.log(selected)
-            // 온 결과 append html (위에 했던것처럼)
+                // 온 결과 append html (위에 했던것처럼)
             $.ajax({
                 type: "POST",
                 url: "/api/search",
                 data: selected,
-                success: function (response) {
+                success: function(response) {
                     // DB에서 받아온 데이터로 테이블 만들기
                     console.log(response)
                     if (response['result'] == 'not found') {
@@ -180,6 +225,61 @@
                             '<td>' + package + '</td>' + '<td>' + product_shape + '</td>' +
                             '<td>' + factory + '</td>' + '<td>' + permission_date + '</td>' + '<td>' + last_update + '</td>' + '</tr>'
                         $('#crwallist > tbody').append(temp_html)
+                            // $('#crwallist > tbody').append(temp_html)
+                        listordernumber++;
+                    }
+                }
+            });
+        }
+
+
+        function searchtext() {
+            $('#crwallist > tbody').empty()
+            let listordernumber = 1
+            let searchtext = $('#searchtext').val();
+            console.log(searchtext)
+            $.ajax({
+                type: "POST",
+                url: "/api/searchtext",
+                data: searchtext,
+                success: function(response) {
+                    // DB에서 받아온 데이터로 테이블 만들기
+                    console.log(response)
+                    if (response['result'] == 'not found') {
+                        alert('no elements found')
+                        return
+                    }
+                    console.log(searchtext)
+                    let data = response['drugs']
+                    for (let i = 0; i < data.length; i++) {
+                        let license_number = data[i]['license_number'] // 인허가번호
+                        let factory = data[i]['factory'] // 업소명
+                        let product_report_number = data[i]['product_report_number'] // 품목제조번호
+                        let product_name = data[i]['product_name'] //품목 명
+                        let permission_date = data[i]['permission_date'] // 허가일자
+                        let shelflife = data[i]['shelflife'] // 유통기한 일수
+                        let dispose = data[i]['dispose'] // 성상
+                        let intake_method = data[i]['intake_method'] // 섭취방법
+                        let primary_functionality = data[i]['primary_functionality'] // 주된 기능성
+                        let caution = data[i]['caution'] //섭취시 주의사항
+                        let storage_method = data[i]['storage_method'] // 보관 방법
+                        let category = data[i]['category'] // 유형
+                        let standard_test = data[i]['standard_test'] // 기준 규격
+                        let high_low_calorie = data[i]['high_low_calorie'] // 고열량저영양여부
+                        let production = data[i]['production'] // 생산종료여부
+                        let child = data[i]['child'] // 어린이 기호 식품 여부
+                        let product_shape = data[i]['product_shape'] //제품 형태
+                        let package = data[i]['package'] // 포장 재질
+                        let substance = data[i]['substance_list'] // 품목 유형(기능지표성분)
+                        let type_of_business = data[i]['type_of_business'] // 업종 (건강기능식품전문제조업)
+                        let last_update = data[i]['last_update'] // 최종수정일자
+
+                        let temp_html = '<tr>' + '<td>' + listordernumber + '</td>' + '<td>' + license_number +
+                            '</td>' + '<td>' + product_name + '</td>' + '<td>' + substance + '</td>' +
+                            '<td>' + package + '</td>' + '<td>' + product_shape + '</td>' +
+                            '<td>' + factory + '</td>' + '<td>' + permission_date + '</td>' + '<td>' + last_update + '</td>' + '</tr>'
+                        $('#crwallist > tbody').append(temp_html)
+                            // $('#crwallist > tbody').append(temp_html)
                         listordernumber++;
                     }
                 }
@@ -191,9 +291,8 @@
 
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">HNF 건강기능식품 검색 포털</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <a class="navbar-brand" href="#">VITASEARCH 식약처 건강기능식품 품목신고현황 검색</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
@@ -206,8 +305,7 @@
                     <a class="nav-link" href="#">About</a>
                 </li>
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
-                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         검색
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarDropdown">
@@ -218,12 +316,14 @@
                     </div>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Disabled</a>
+                    <!-- <a class="nav-link disabled" href="#" tabindex="-1" aria-disabled="true">Beta Version</a> -->
+                    <a href="mailto:buzzz@hanyang.ac.kr">Contact Admin</a>
+
                 </li>
             </ul>
             <form class="form-inline my-2 my-lg-0">
-                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+                <input id='searchtext' class="form-control mr-sm-2" type="search" placeholder="검색어를 입력하세요" aria-label="Search">
+                <button onclick="searchtext()" class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
             </form>
         </div>
     </nav>
@@ -236,18 +336,20 @@
     <h3> **성분별 검색** </h3>
     <h4> *비타민* </h4>
     <input type="checkbox" id='vitamin_a'>
-    <font>비타민 A</font>
+    <font>비타민A</font>
     <input type="checkbox" id='beta_carotine'>
     <font>베타카로틴</font>
-    <!-- <p></p>
+    <p></p>
     <input type="checkbox" id='vitamin_b1'>
-    <font>비타민 B1(티아민)</font>
+    <font>비타민B1(티아민)</font>
     <input type="checkbox" id='vitamin_b2'>
-    <font>비타민 B2(리보플라빈)</font>
+    <font>비타민B2(리보플라빈)</font>
     <input type="checkbox" id='vitamin_b3'>
-    <font>비타민 B3(나이아신)</font>
+    <font>비타민B3(나이아신)</font>
     <input type="checkbox" id='vitamin_b5'>
-    <font>비타민 B5(판토텐산)</font>
+    <font>비타민B5(판토텐산)</font>
+    <input type="checkbox" id='vitamin_b6'>
+    <font>비타민 B6</font>
     <input type="checkbox" id='vitamin_b7'>
     <font>비타민 B7(비오틴)</font>
     <input type="checkbox" id='vitamin_b9'>
@@ -259,24 +361,15 @@
     <font>비타민 C</font>
     <input type="checkbox" id='omega-3'>
     <font>오메가-3 (EPA + DHA 함유 유지)</font>
-    <p></p>
+    <input type="checkbox" id='omega3'>
+    <font>EPA+DHA함유유지</font>
     <input type="checkbox" id='vitamin_d'>
     <font>비타민 D</font>
-    <input type="checkbox" id='vitamin_d1'>
-    <font>비타민 D1</font>
-    <input type="checkbox" id='vitamin_d2'>
-    <font>비타민 D2</font>
-    <input type="checkbox" id='vitamin_d3'>
-    <font>비타민 D3</font>
-    <p></p>
     <input type="checkbox" id='vitamin_e'>
     <font>비타민 E</font>
     <input type="checkbox" id='vitamin_k'>
     <font>비타민 K</font>
-    <input type="checkbox" id='vitamin_k1'>
-    <font>비타민 K1</font>
-    <input type="checkbox" id='vitamin_k2'>
-    <font>비타민 K2</font>
+
     <p></p>
     <h4> *미네랄* </h4>
     <input type="checkbox" id='calcium'>
@@ -297,18 +390,31 @@
     <font>몰리브덴</font>
     <input type="checkbox" id='iodine'>
     <font>요오드</font>
+    <input type="checkbox" id='copper'>
+    <font>구리</font>
     <p></p>
     <h4> *기능성 원료* </h4>
-    <input type="checkbox" id='letein'>
+    <input type="checkbox" id='redginseng'>
+    <font>홍삼</font>
+    <input type="checkbox" id='probiotics'>
+    <font>프로바이오틱스</font>
+    <input type="checkbox" id='lutein'>
     <font>루테인</font>
     <input type="checkbox" id='marigold'>
-    <font>마리골드꽃 추출물</font>
+    <font>마리골드꽃추출물</font>
+    <input type="checkbox" id='milk_thistle'>
+    <font>밀크씨슬추출물</font>
     <input type="checkbox" id='milkthistle'>
-    <font>밀크씨슬</font>
+    <font>밀크씨슬(카르두스마리아누스)추출물</font>
     <input type="checkbox" id='hyaluronic_acid'>
     <font>히알루론산</font>
     <input type="checkbox" id='coenzyme_q10'>
-    <font>코엔자임 Q10</font> -->
+    <font>코엔자임Q10</font>
+    <input type="checkbox" id='chlorella'>
+    <font>클로렐라</font>
+    <input type="checkbox" id='rhodiola'>
+    <font>홍경천추출물</font>
+
     <p></p>
     <input onclick="search()" class="btn btn-primary" type="submit" value="성분별 검색하기" id="substance_search">
     <br />
@@ -317,27 +423,35 @@
 
 
     <div>
-        <h2>건강기능식품 품목제조 신고사항 현황</h2>
-        <p>데이터량이 많아 '업데이트' 클릭 후 리스트가 채워지며, 모든 리스트가 채워지기까지 다소 시간이 소요됩니다. </p>
-        <p>검색은 Ctrl + F를 눌러 검색기능(페이지 탐색) 사용이 가능합니다. </p>
-        <p>문의: 관리자 김준식 acolorfulsolution@gmail.com </p>
-        <button onclick="update()" class="btn btn-primary">업데이트</button>
-        <button class="btn btn-primary" onclick="get_total_count()">품목신고 전체 수 업데이트</button>
-        <div id='total_count'>Total Count: 28,418 (2020.04.27 기준)</div>
+        <h2>식약처 건강기능식품 품목제조 신고사항 현황</h2>
+        <p>접속 환경에 따라 모든 리스트가 채워지기까지 다소 시간이 소요될 수 있습니다.</p>
+        <p>성분 별 검색은 위의 체크박스를 이용해주시고, 그 외 Ctrl + F를 눌러 기타 검색(업체명, 포장 등) 사용이 가능합니다. </p>
+        <p></p>
+        <button onclick="update()" class="btn btn-primary">목록 업데이트</button>
+        <button class="btn btn-primary" onclick="get_total_count()">현재 기준 품목신고 전체 개수 가져오기</button>
+        <div id='total_count'>품목신고 완료: 28,491개 (2020.04.29 기준)</div>
     </div>
 
     <table id="crwallist" class="table table-striped">
         <thead>
             <tr>
-                <th scope="col">No.</th>
-                <th scope="col">1. 인허가번호</th>
-                <th scope="col">2. 제품명</th>
-                <th scope="col">3. 성분</th>
-                <th scope="col">4. 포장재질</th>
-                <th scope="col">5. 제품형태</th>
-                <th scope="col">6. 업소명</th>
-                <th scope="col">7. 허가일자</th>
-                <th scope="col">8. 최종수정일자</th>
+                <th scope="col" style="TEXT-ALIGN: center">No.</th>
+                <th scope="col" style="TEXT-ALIGN: center">Ⅰ
+                    <p></p> 인허가번호</th>
+                <th scope="col" style="TEXT-ALIGN: center">Ⅱ
+                    <p></p> 제품명</th>
+                <th scope="col" style="TEXT-ALIGN: center">Ⅲ
+                    <p></p> 성분</th>
+                <th scope="col" style="TEXT-ALIGN: center">Ⅳ
+                    <p></p> 포장재질</th>
+                <th scope="col" style="TEXT-ALIGN: center">Ⅴ
+                    <p></p> 제품형태</th>
+                <th scope="col" style="TEXT-ALIGN: center">Ⅵ
+                    <p></p> 업소명</th>
+                <th scope="col" style="TEXT-ALIGN: center">Ⅶ
+                    <p></p> 허가일자</th>
+                <th scope="col" style="TEXT-ALIGN: center">Ⅷ
+                    <p></p> 최종수정일자</th>
             </tr>
         </thead>
         <tbody>
@@ -346,8 +460,7 @@
                 <td>20040020002</td>
                 <td>+프리맥</td>
                 <td>폴리코사놀-사탕수수 왁스알코올(2006-4)</td>
-                <td>PTP(염화비닐수지+알루미늄호일), HDPE(고밀도폴리에틸렌), PE(폴리에틸렌), PET(폴리에틸렌테레프탈레이트), PP(폴리프로필렌), PS(폴리스틸렌), 유리,
-                    AL(알루미늄), 철.</td>
+                <td>PTP(염화비닐수지+알루미늄호일), HDPE(고밀도폴리에틸렌), PE(폴리에틸렌), PET(폴리에틸렌테레프탈레이트), PP(폴리프로필렌), PS(폴리스틸렌), 유리, AL(알루미늄), 철.</td>
                 <td>캡슐</td>
                 <td>코스맥스바이오(주)</td>
                 <td>20150624</td>
