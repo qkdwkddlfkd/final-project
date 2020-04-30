@@ -88,7 +88,9 @@ def crawl_all_data(curr_count, total_count):
 # def current_date():
 
 
-
+@app.route('/about')
+def about():
+    return render_template('about.html')
 
 # API 역할을 하는 부분
 

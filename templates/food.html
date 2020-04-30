@@ -99,6 +99,20 @@
             });
         }
 
+        function about() {
+            console.log('About 콘솔')
+            $.ajax({
+                type: "get",
+                url: "/about",
+                data: {},
+                success: function(response) {
+                    if (response['result'] == 'success') {
+                        alert('About 페이지로 이동합니다.')
+                    }
+                }
+            });
+        }
+
         function get_total_count() {
             //Ajax써서 GET으로 데이터 받아오기
             $.ajax({
@@ -302,7 +316,7 @@
                     <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="#">About</a>
+                    <a onclick="about()" class="nav-link" href="#">About</a>
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -427,7 +441,8 @@
         <p>접속 환경에 따라 모든 리스트가 채워지기까지 다소 시간이 소요될 수 있습니다.</p>
         <p>성분 별 검색은 위의 체크박스를 이용해주시고, 그 외 Ctrl + F를 눌러 기타 검색(업체명, 포장 등) 사용이 가능합니다. </p>
         <p></p>
-        <button onclick="update()" class="btn btn-primary">목록 업데이트</button>
+        <button onclick="get_drugs()" class="btn btn-primary">전체 목록 업데이트</button>
+        <!-- onclick="update()" get_drugs() -->
         <button class="btn btn-primary" onclick="get_total_count()">현재 기준 품목신고 전체 개수 가져오기</button>
         <div id='total_count'>품목신고 완료: 28,491개 (2020.04.29 기준)</div>
     </div>
